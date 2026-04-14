@@ -1,0 +1,17 @@
+[project]
+name = "weathernest-backend"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+dev = []
+
+[tool.ruff]
+# Ruff config — to be filled in
+
+[tool.mypy]
+# mypy config — to be filled in
+
+[tool.pytest.ini_options]
+# pytest config — to be filled in
