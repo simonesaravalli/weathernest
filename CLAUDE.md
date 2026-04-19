@@ -6,6 +6,7 @@ Project-level guidance for Claude Code. Read this before touching any code.
 @.claude/rules/workflow.md
 @.claude/rules/api-conventions.md
 @.claude/rules/avoid.md
+@.claude/rules/git.md
 
 ## Docs
 @.claude/docs/overview.md
@@ -20,3 +21,4 @@ Project-level guidance for Claude Code. Read this before touching any code.
 @.claude/skills/dev-setup.md
 @.claude/skills/commands.md
 @.claude/skills/testing.md
+@.claude/skills/git-workflow.md
