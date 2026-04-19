@@ -49,7 +49,7 @@ readings from DIY home sensors (ESP32 + DHT22) via a REST API endpoint.
 | Phase 0 | ✅ Complete | Claude Code setup & first CLAUDE.md |
 | Phase 1 | ✅ Complete | Architecture planning & scaffolding |
 | Phase 2 | ✅ Complete | CLAUDE.md deep dive (imports, rules, skills, docs) |
-| Phase 3 | ⏳ Pending | Iterative code generation |
+| Phase 3 | 🔄 In progress | Iterative code generation |
 | Phase 4 | ⏳ Pending | Local deployment with Docker |
 | Phase 5 | ⏳ Pending | Cloud deployment on AWS |
 | Phase 6 | ⏳ Pending | ESP32 sensor ingestion |
@@ -353,13 +353,47 @@ hand-holding vs. already knowing your codebase.**
 
 Build the app one layer at a time — never ask Claude Code to build everything at once.
 
-### Recommended order
+### Progress
 
-1. **Data layer** — service that fetches weather from Open-Meteo for configured locations
-2. **Backend API** — REST endpoints for forecast, locations, and sensor ingestion
-3. **Database layer** — SQLAlchemy models, Pydantic schemas, first Alembic migration
-4. **Frontend** — React dashboard displaying temperature, humidity, and other metrics
-5. **Configuration** — locations defined in config, not hardcoded
+| Step | Status | Branch | PR |
+|---|---|---|---|
+| Forecast data layer | ✅ Merged | `feat/forecast-service` | #1 |
+| Forecast API layer | 🔄 In progress | `feat/forecast-api` | — |
+| Sensor data layer | ⏳ Pending | — | — |
+| Sensor API layer | ⏳ Pending | — | — |
+| Database layer (models + migrations) | ⏳ Pending | — | — |
+| Frontend | ⏳ Pending | — | — |
+
+### What was built — Forecast data layer (`feat/forecast-service`)
+
+**Files created/modified:**
+- `backend/app/core/config.py` — `Settings` via `pydantic-settings`; `OPEN_METEO_BASE_URL` overridable for tests
+- `backend/app/schemas/forecast.py` — `ForecastResponse`, `CurrentWeather`, `HourlyEntry` Pydantic schemas
+- `backend/app/services/forecast.py` — `ForecastService.get_forecast(lat, lon)`: calls Open-Meteo, normalises response, raises `ForecastServiceError` on failure
+- `backend/tests/test_forecast_service.py` — 4 unit tests (happy path, HTTP error, network error, missing key)
+- `backend/pyproject.toml` — all dependencies pinned, ruff/mypy/pytest config, setuptools package discovery
+
+**Key decisions made:**
+- `OPEN_METEO_BASE_URL` is a `Settings` field (not a constant) so tests can override it — no real API calls in tests
+- `ForecastServiceError` wraps all failure modes — callers never deal with raw `httpx` exceptions
+- Open-Meteo's response shape never leaves the service layer
+
+### What's next — Forecast API layer (`feat/forecast-api`)
+
+Two files to implement:
+1. `backend/app/main.py` — FastAPI app factory, CORS middleware, mount router
+2. `backend/app/api/v1/forecast.py` — `GET /api/v1/forecast?lat=...&lon=...` route handler wired to `ForecastService`
+
+After this the app will be runnable locally and the forecast endpoint testable via `/docs`.
+
+### Recommended order (remaining)
+
+1. ~~**Forecast data layer**~~ ✅
+2. **Forecast API layer** ← current
+3. **Database layer** — SQLAlchemy engine, session, ORM models, Alembic migration
+4. **Sensor data layer** — `SensorService` for persisting readings
+5. **Sensor API layer** — `POST /api/v1/sensors/readings`
+6. **Frontend** — React dashboard
 
 ### Key lesson
 
